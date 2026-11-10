@@ -1,0 +1,7 @@
+.env
+.venv
+__pycache__
+decisions.jsonl
+calls_today.json
+tests/eval_log.jsonl
+.git

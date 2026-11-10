@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+decisions.jsonl
+.DS_Store
+calls_today.json
+tests/eval_log.jsonl

@@ -1,0 +1,12 @@
+# never upload secrets or local state
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.pyc
+decisions.jsonl
+calls_today.json
+tests/eval_log.jsonl
+.git/
+.DS_Store

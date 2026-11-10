@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ring Inbox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #ffffff; --line: #e6e3dc; --line-2: #d6d2c9;
+    --ink: #1b1a17; --soft: #5f5c55; --faint: #8f8b82;
+    --accent: #e8501c; --accent-soft: #fdeee7;
+    --call: #0f7b52; --call-bg: #e4f4ec;
+    --look: #96600a; --look-bg: #fbf0d6;
+    --skip: #77736b; --skip-bg: #efede8;
+    --bad: #c0301c;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 Inter, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px 56px; }
+
+  /* top */
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0 0; }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; }
+  .mark { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--accent); position: relative; flex: none; }
+  .mark::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--accent); }
+  .by { color: var(--faint); font-size: 12.5px; text-align: right; }
+
+  .intro { padding: 28px 0 22px; max-width: 760px; }
+  h1 { font: 400 clamp(34px, 5vw, 50px)/1.05 "Instrument Serif", Georgia, serif; letter-spacing: -.4px; margin: 0 0 10px; }
+  h1 em { color: var(--accent); }
+  .pitch { color: var(--soft); font-size: 16.5px; margin: 0; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 2px rgba(27, 26, 23, .04); min-width: 0; }
+  .pad { padding: 18px 20px 20px; }
+  h2 { font-size: 13px; font-weight: 600; letter-spacing: .6px; text-transform: uppercase; color: var(--soft); margin: 0 0 4px; }
+  .help { color: var(--faint); font-size: 13.5px; margin: 0 0 14px; }
+
+  /* the start strip */
+  .start { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 20px; margin-bottom: 20px; }
+  .tel { flex: 1 1 260px; display: flex; align-items: stretch; border: 1px solid var(--line-2); border-radius: 10px; background: #fff; transition: border-color .15s, box-shadow .15s; }
+  .tel:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .tel.bad { border-color: var(--bad); }
+  .tel span { display: flex; align-items: center; padding: 0 11px 0 13px; color: var(--soft); border-right: 1px solid var(--line); font-weight: 500; font-size: 16px; }
+  .tel input { flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--ink); font: 500 18px/1 Inter, sans-serif; letter-spacing: 1px; padding: 13px; font-variant-numeric: tabular-nums; }
+  .tel input::placeholder { color: #c4c0b7; }
+  .go { flex: 0 0 auto; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font: 600 16px/1 Inter, sans-serif; padding: 15px 26px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: transform .08s, filter .15s; }
+  .go svg { width: 16px; height: 16px; }
+  .go:hover { filter: brightness(1.06); } .go:active { transform: translateY(1px); }
+  .go:disabled { filter: grayscale(.5) opacity(.7); cursor: default; }
+  .note { flex-basis: 100%; color: var(--faint); font-size: 12.5px; margin: -2px 0 0; }
+  .note.bad { color: var(--bad); }
+
+  /* two columns */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+  .left { display: grid; gap: 20px; min-width: 0; }
+  .right { position: sticky; top: 16px; }
+
+  /* rules */
+  .rule { display: flex; gap: 9px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 9px 6px 9px 11px; margin-bottom: 8px; background: #fcfbf9; transition: border-color .15s, box-shadow .15s; }
+  .rule:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); background: #fff; }
+  .rule .n { color: var(--faint); font-weight: 600; font-size: 13px; padding-top: 2px; width: 13px; flex: none; }
+  .rule textarea { flex: 1; min-width: 0; background: none; border: 0; outline: 0; resize: none; color: var(--ink); font: inherit; font-size: 14.5px; line-height: 1.5; padding: 0; overflow: hidden; }
+  .x { background: none; border: 0; color: var(--faint); cursor: pointer; font-size: 14px; line-height: 1; padding: 5px 6px; border-radius: 6px; }
+  .x:hover { color: var(--ink); background: var(--skip-bg); }
+  .add { background: none; border: 0; color: var(--accent); font: 500 14px Inter, sans-serif; cursor: pointer; padding: 6px 2px; }
+  .add:hover { text-decoration: underline; }
+
+  /* chips */
+  .chip { font-style: normal; display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 99px; white-space: nowrap; flex: none; }
+  .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .chip.call { color: var(--call); background: var(--call-bg); }
+  .chip.look { color: var(--look); background: var(--look-bg); }
+  .chip.ignore { color: var(--skip); background: var(--skip-bg); }
+  .chip.wait { color: var(--faint); background: none; border: 1px solid var(--line); }
+  .chip.wait::before { display: none; }
+  .chip.reading { color: var(--accent); background: var(--accent-soft); }
+  .chip.reading::before { animation: blink .8s infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+
+  /* inbox */
+  .tabs { display: none; gap: 4px; background: var(--skip-bg); border-radius: 10px; padding: 4px; margin: 2px 0 12px; }
+  .tabs.on { display: flex; }
+  .tabs button { flex: 1; border: 0; background: none; border-radius: 7px; padding: 8px 10px; font: 500 13.5px Inter, sans-serif; color: var(--soft); cursor: pointer; }
+  .tabs button.active { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(27, 26, 23, .1); }
+  .tabs button .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--call); margin-right: 6px; vertical-align: 1px; }
+  .watching .tabs button.active .dot { animation: blink 1.2s infinite; }
+  .listhead { padding: 18px 20px 12px; border-bottom: 1px solid var(--line); }
+  .listhead .help { margin: 0; }
+  .mail { padding: 13px 20px; border-bottom: 1px solid var(--line); position: relative; overflow: hidden; cursor: pointer; transition: background .15s; }
+  .mail:hover { background: #fcfbf9; }
+  .mail.new { animation: rise .3s ease; }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .mail.reading { background: #fffaf7; }
+  .mail.reading::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); animation: scan 1s linear infinite; }
+  @keyframes scan { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+  .mail.ignore .row { opacity: .55; }
+  .row { display: flex; gap: 12px; }
+  .av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-weight: 600; font-size: 14px; flex: none; color: var(--ink); }
+  .mid { flex: 1; min-width: 0; }
+  .line1 { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+  .who { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .addr { display: none; color: var(--faint); font-size: 12.5px; overflow-wrap: anywhere; }
+  .subj { font-size: 14px; overflow-wrap: anywhere; }
+  .body { color: var(--faint); font-size: 13px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mail.open .body { white-space: pre-wrap; overflow-wrap: anywhere; color: var(--soft); margin-top: 6px; }
+  .mail.open .addr { display: block; }
+
+  details { padding: 14px 20px 18px; background: #fcfbf9; border-radius: 0 0 14px 14px; }
+  summary { cursor: pointer; color: var(--accent); font-weight: 500; font-size: 14px; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary:hover { text-decoration: underline; }
+  .own { display: grid; gap: 8px; margin-top: 12px; }
+  .own input, .own textarea { background: #fff; border: 1px solid var(--line-2); border-radius: 9px; color: var(--ink); font: inherit; font-size: 14.5px; padding: 9px 11px; width: 100%; outline: 0; resize: vertical; }
+  .own input:focus, .own textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .own ::placeholder { color: #b5b1a8; }
+  .btn { background: var(--ink); border: 0; color: #fff; border-radius: 9px; padding: 10px 16px; cursor: pointer; font: 500 14px Inter, sans-serif; justify-self: start; }
+
+  /* decision log */
+  .key { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 12.5px; color: var(--soft); }
+  .key span { display: inline-flex; align-items: center; gap: 6px; }
+  .sum { margin-top: 10px; font-size: 13.5px; color: var(--ink); font-weight: 500; }
+  .sum:empty { display: none; }
+  .log { max-height: calc(100vh - 220px); overflow-y: auto; }
+  .empty { color: var(--faint); font-size: 14px; padding: 36px 20px; text-align: center; }
+  .entry { padding: 14px 20px; border-top: 1px solid var(--line); animation: rise .3s ease; }
+  .entry .top { display: flex; gap: 10px; align-items: flex-start; justify-content: space-between; }
+  .entry .subj { font-weight: 600; overflow-wrap: anywhere; }
+  .entry .from { color: var(--faint); font-size: 12.5px; overflow-wrap: anywhere; }
+  .entry .sure { margin-top: 8px; font-size: 13px; font-weight: 600; }
+  .entry.call .sure { color: var(--call); } .entry.look .sure { color: var(--look); } .entry.ignore .sure { color: var(--skip); }
+  .entry .why { font-size: 13.5px; color: var(--soft); margin-top: 2px; overflow-wrap: anywhere; }
+  .entry .say { margin-top: 8px; background: var(--call-bg); border-radius: 9px; padding: 8px 12px; font-size: 13.5px; overflow-wrap: anywhere; }
+  .entry .say b { color: var(--call); font-weight: 600; }
+
+  /* call banner */
+  .ring { display: none; margin: 0 20px 16px; border-radius: 12px; padding: 14px 16px; background: var(--skip-bg); gap: 13px; align-items: flex-start; }
+  .ring.on { display: flex; animation: rise .3s ease; }
+  .ring.live { background: var(--accent-soft); }
+  .ring.done { background: var(--call-bg); }
+  .dial { width: 40px; height: 40px; border-radius: 50%; background: #fff; color: var(--soft); display: grid; place-items: center; flex: none; position: relative; }
+  .dial svg { width: 18px; height: 18px; }
+  .ring.live .dial { background: var(--accent); color: #fff; }
+  .ring.done .dial { background: var(--call); color: #fff; }
+  .ring.live .dial::before, .ring.live .dial::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--accent); animation: pulse 1.6s ease-out infinite; }
+  .ring.live .dial::after { animation-delay: .8s; }
+  @keyframes pulse { from { transform: scale(1); opacity: .6; } to { transform: scale(2); opacity: 0; } }
+  .ring .t { font-weight: 600; font-size: 15px; }
+  .ring .s { color: var(--soft); font-size: 13.5px; margin-top: 2px; overflow-wrap: anywhere; }
+
+  footer { color: var(--faint); font-size: 12.5px; text-align: center; margin-top: 30px; }
+
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: 1fr; }
+    .right { position: static; }
+    .log { max-height: none; }
+    .by { display: none; }
+    .intro { padding: 22px 0 18px; }
+    .go { flex: 1 1 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="bar">
+    <div class="brand"><span class="mark"></span>Ring Inbox</div>
+    <div class="by">Built by Himanshu Sharma for the i-SmokeStack AI Associate challenge</div>
+  </div>
+
+  <div class="intro">
+    <h1>The emails that matter <em>call you.</em></h1>
+    <p class="pitch">I rarely check my inbox, so important emails slip by. Here an AI reads every email against rules written in plain English. If one matters, it phones you and tells you what it says.</p>
+  </div>
+
+  <div class="card start">
+    <div class="tel" id="tel">
+      <span>+91</span>
+      <input id="phone" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="98765 43210" maxlength="11" aria-label="Your mobile number" aria-describedby="note">
+    </div>
+    <button class="go" id="go">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/></svg>
+      <span id="goText">Start</span>
+    </button>
+    <p class="note" id="note">Enter your number to get the real call. Used once, never saved. Leave it empty to only watch the decisions.</p>
+  </div>
+
+  <div class="grid">
+    <div class="left">
+      <div class="card pad">
+        <h2>Your rules</h2>
+        <p class="help">Plain English. Change them, press Start again, and watch the decisions change.</p>
+        <div id="rules"></div>
+        <button class="add" id="addRule">+ Add a rule</button>
+      </div>
+
+      <div class="card">
+        <div class="listhead">
+          <h2>Inbox</h2>
+          <div class="tabs" id="tabs">
+            <button id="tabReal"><span class="dot"></span>My real inbox</button>
+            <button id="tabSample" class="active">Sample emails</button>
+          </div>
+          <p class="help" id="inboxHelp">Sample emails. Click one to read it in full.</p>
+        </div>
+        <div id="inbox"></div>
+        <details id="ownBox">
+          <summary>+ Add your own email to test it</summary>
+          <div class="own">
+            <input id="ownFrom" placeholder="From, e.g. Priya <priya@yourclient.com>" maxlength="200">
+            <input id="ownSubject" placeholder="Subject" maxlength="300">
+            <textarea id="ownBody" rows="4" placeholder="Write the email here" maxlength="3000"></textarea>
+            <button class="btn" id="addOwn">Add to inbox</button>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="card">
+        <div class="pad">
+          <h2>Decision log</h2>
+          <div class="key">
+            <span><i class="chip call">Call</i> clearly important</span>
+            <span><i class="chip look">Needs a look</i> AI unsure, you decide</span>
+            <span><i class="chip ignore">Ignored</i> not important</span>
+          </div>
+          <div class="sum" id="sum"></div>
+        </div>
+        <div class="ring" id="ring">
+          <div class="dial"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02z"/></svg></div>
+          <div><div class="t" id="ringT"></div><div class="s" id="ringS"></div></div>
+        </div>
+        <div class="log" id="log"><div class="empty">Press Start. Every email gets a decision and a reason here.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>The AI only gives a verdict and how sure it is. Plain code picks the action, and every decision is logged.</footer>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const LABEL = { call: "Call", look: "Needs a look", ignore: "Ignored", wait: "Unread", reading: "Reading" };
+const TINTS = ["#ffd9c7", "#cfe6ff", "#d3f1dc", "#ffe9b8", "#e5dcff", "#ffd6e0", "#cdf1ee"];
+let emails = [];       // sample emails + any the visitor adds
+let cards = [];        // the inbox row for each email
+let running = false;
+
+function el(tag, cls, text) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const senderName = (from) => (from.split("<")[0].trim().replace(/^"|"$/g, "") || from).trim();
+
+// ---------- phone number: digits only, shown as 98765 43210 ----------
+const NOTE = "Enter your number to get the real call. Used once, never saved. Leave it empty to only watch the decisions.";
+const digits = () => $("phone").value.replace(/\D/g, "");
+$("phone").addEventListener("input", () => {
+  const d = digits().replace(/^91(?=\d{10})/, "").replace(/^0+/, "").slice(0, 10);
+  $("phone").value = d.length > 5 ? d.slice(0, 5) + " " + d.slice(5) : d;
+  phoneError("");
+});
+$("phone").addEventListener("keydown", (e) => { if (e.key === "Enter") $("go").click(); });
+function phoneError(text) {
+  $("tel").classList.toggle("bad", !!text);
+  $("note").classList.toggle("bad", !!text);
+  $("note").textContent = text || NOTE;
+}
+
+// ---------- rules ----------
+function grow(box) { box.style.height = "auto"; box.style.height = box.scrollHeight + "px"; }
+function addRule(text = "", focus = false) {
+  const row = el("div", "rule");
+  const box = el("textarea"); box.value = text; box.rows = 1; box.maxLength = 300; box.placeholder = "Describe an email you never want to miss";
+  box.addEventListener("input", () => grow(box));
+  const del = el("button", "x", "✕"); del.title = "Remove this rule"; del.setAttribute("aria-label", "Remove this rule");
+  del.onclick = () => { row.remove(); numberRules(); };
+  row.append(el("span", "n"), box, del);
+  $("rules").append(row);
+  numberRules(); grow(box);
+  if (focus) box.focus();
+}
+const growAll = () => document.querySelectorAll("#rules textarea").forEach(grow);
+window.addEventListener("resize", growAll);
+if (document.fonts) document.fonts.ready.then(growAll);
+function numberRules() { document.querySelectorAll("#rules .n").forEach((s, i) => s.textContent = i + 1); }
+function readRules() { return [...document.querySelectorAll("#rules textarea")].map(t => t.value.trim()).filter(Boolean); }
+
+// ---------- inbox ----------
+function addMail(mail, isNew) {
+  const name = senderName(mail.from);
+  const card = el("div", "mail" + (isNew ? " new" : ""));
+  const row = el("div", "row");
+  const av = el("div", "av", name.charAt(0).toUpperCase());
+  av.style.background = TINTS[[...name].reduce((a, c) => a + c.charCodeAt(0), 0) % TINTS.length];
+  const mid = el("div", "mid"); const line1 = el("div", "line1");
+  const chip = el("span", "chip wait", LABEL.wait);
+  line1.append(el("div", "who", name), chip);
+  mid.append(line1, el("div", "addr", mail.from), el("div", "subj", mail.subject || "(no subject)"), el("div", "body", mail.body));
+  row.append(av, mid);
+  card.append(row);
+  card.onclick = () => card.classList.toggle("open");
+  card.setState = (state) => {
+    card.classList.remove("reading", "call", "look", "ignore", "new");
+    if (state !== "wait") card.classList.add(state);
+    chip.className = "chip " + state; chip.textContent = LABEL[state];
+  };
+  $("inbox").append(card);
+  cards.push(card);
+}
+
+// ---------- decision log ----------
+function showDecision(mail, d) {
+  const entry = el("div", "entry " + d.action);
+  const top = el("div", "top"); const left = el("div");
+  left.append(el("div", "subj", mail.subject || "(no subject)"), el("div", "from", "From " + senderName(mail.from)));
+  top.append(left, el("span", "chip " + d.action, LABEL[d.action]));
+  entry.append(top);
+  const pct = Math.round(d.confidence * 100);
+  const sure = d.ai_failed ? "No AI verdict" : pct + "% sure " + (d.rule_number ? "it matches rule " + d.rule_number : "it matches none of your rules");
+  entry.append(el("div", "sure", sure), el("div", "why", d.reason));
+  if (d.call_line) { const say = el("div", "say"); say.append(el("b", "", "Said on the call: "), document.createTextNode(d.call_line)); entry.append(say); }
+  $("log").append(entry);
+  $("log").scrollTo({ top: $("log").scrollHeight, behavior: "smooth" });
+}
+
+async function post(url, data) {
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(typeof body.detail === "string" ? body.detail : "Something went wrong. Try again.");
+  return body;
+}
+
+function ringCard(mode, title, text) {
+  $("ring").className = "ring on " + mode; $("ringT").textContent = title; $("ringS").textContent = text || "";
+}
+
+function checkInputs() {
+  const phone = digits();
+  if (phone && !/^[6-9]\d{9}$/.test(phone)) { phoneError("Enter a 10-digit Indian mobile number, or leave it empty."); $("phone").focus(); return null; }
+  if (!readRules().length) { $("sum").textContent = "Add at least one rule first."; return null; }
+  return { phone };
+}
+
+// ---------- two inboxes, one engine ----------
+let mode = "sample", sample = [], realAddress = null, watching = false, lastUid = 0;
+
+function showInbox(list) {
+  emails = list; cards = [];
+  $("inbox").textContent = "";
+  list.forEach(m => addMail(m, false));
+}
+
+function setMode(next) {
+  if (running) return;
+  watching = false; document.body.classList.remove("watching");
+  mode = next;
+  $("tabReal").classList.toggle("active", mode === "real");
+  $("tabSample").classList.toggle("active", mode === "sample");
+  $("ownBox").style.display = mode === "real" ? "none" : "";
+  $("log").textContent = ""; $("sum").textContent = ""; $("ring").className = "ring";
+  $("log").append(el("div", "empty", mode === "real" ? "Press Start watching, then send an email to " + realAddress + "." : "Press Start. Every email gets a decision and a reason here."));
+  if (mode === "real") {
+    showInbox([]);
+    $("inbox").append(el("div", "empty", "New emails to " + realAddress + " will appear here."));
+    $("inboxHelp").textContent = "Live from " + realAddress + ". Read only: nothing is marked, moved or deleted.";
+    $("goText").textContent = "Start watching";
+  } else {
+    showInbox(sample);
+    $("inboxHelp").textContent = "Sample emails. Click one to read it in full.";
+    $("goText").textContent = "Start";
+  }
+}
+
+async function watch() {
+  if (watching) {
+    watching = false; document.body.classList.remove("watching");
+    $("goText").textContent = "Start watching"; $("sum").textContent = "Stopped watching.";
+    return;
+  }
+  if (!checkInputs()) return;
+  try {
+    const r = await fetch("/api/inbox/latest").then(r => r.ok ? r.json() : Promise.reject());
+    lastUid = r.uid;
+  } catch { $("sum").textContent = "Could not reach the inbox. Try again."; return; }
+
+  watching = true; document.body.classList.add("watching");
+  $("goText").textContent = "Stop watching";
+  $("log").textContent = ""; $("ring").className = "ring";
+  $("sum").textContent = "Watching " + realAddress + ". Send it an email.";
+
+  while (watching) {
+    let fresh = [];
+    try { fresh = (await fetch("/api/inbox/new?after=" + lastUid).then(r => r.json())).emails || []; } catch {}
+    if (fresh.length && watching) {
+      lastUid = Math.max(lastUid, ...fresh.map(m => m.uid));
+      await judge(fresh);
+    }
+    for (let i = 0; i < 8 && watching; i++) await sleep(1000);
+  }
+}
+
+// Judges new real emails with the same brain, then calls if any matter.
+async function judge(fresh) {
+  const { phone } = checkInputs() || { phone: "" };
+  const rules = readRules();
+  if ($("inbox").querySelector(".empty")) $("inbox").textContent = "";
+  if ($("log").querySelector(".empty")) $("log").textContent = "";
+  const start = emails.length;
+  fresh.forEach(m => { emails.push(m); addMail(m, true); });
+  $("sum").textContent = `${fresh.length} new email${fresh.length > 1 ? "s" : ""}. Reading…`;
+
+  const asked = post("/api/decide-all", { emails: fresh.map(m => ({ sender: m.from, subject: m.subject, body: m.body })), rules })
+    .then(r => r.decisions)
+    .catch(e => fresh.map(() => ({ action: "look", confidence: 0, rule: "", rule_number: 0, reason: e.message + " Check this email by hand.", call_line: "", ai_failed: true })));
+
+  const toCall = [];
+  for (let i = 0; i < fresh.length; i++) {
+    const card = cards[start + i];
+    card.setState("reading");
+    const [decisions] = await Promise.all([asked, sleep(650)]);
+    const d = decisions[i];
+    card.setState(d.action);
+    showDecision(fresh[i], d);
+    if (d.action === "call") toCall.push(d.id);
+  }
+  $("sum").textContent = "Watching " + realAddress + ". Send it an email.";
+  if (toCall.length && phone) await ring(phone, toCall);
+  else if (toCall.length) ringCard("", "Worth a call", "Enter your number at the top to get the real call.");
+}
+
+// ---------- one full run ----------
+async function run() {
+  if (running) return;
+  const rules = readRules();
+  const ok = checkInputs();
+  if (!ok) return;
+  const phone = ok.phone;
+
+  running = true; $("go").disabled = true; $("goText").textContent = "Reading…";
+  $("ring").className = "ring"; $("log").textContent = ""; $("sum").textContent = "";
+  cards.forEach(c => c.setState("wait"));
+
+  // The whole inbox goes to the AI in one request. Results are then shown one by one.
+  const asked = post("/api/decide-all", { emails: emails.map(m => ({ sender: m.from, subject: m.subject, body: m.body })), rules })
+    .then(r => r.decisions)
+    .catch(e => emails.map(() => ({ action: "look", confidence: 0, rule: "", rule_number: 0, reason: e.message + " Check this email by hand.", call_line: "", ai_failed: true })));
+
+  const count = { call: 0, look: 0, ignore: 0 }; const toCall = []; let failed = 0;
+  for (let i = 0; i < emails.length; i++) {
+    cards[i].setState("reading");
+    $("sum").textContent = `Reading email ${i + 1} of ${emails.length}…`;
+    const [decisions] = await Promise.all([asked, sleep(650)]);
+    const d = decisions[i];
+    cards[i].setState(d.action);
+    showDecision(emails[i], d);
+    count[d.action]++; if (d.ai_failed) failed++;
+    if (d.action === "call") toCall.push(d.id);
+  }
+  $("sum").textContent = `${emails.length} emails checked: ${count.call} worth a call, ${count.look} need a look, ${count.ignore} ignored.`;
+
+  if (failed === emails.length) ringCard("", "The AI did not answer", "So nothing was decided and no call was placed. Every email is marked for you to check by hand. Try again in a minute.");
+  else if (toCall.length && phone) await ring(phone, toCall);
+  else if (toCall.length) ringCard("", `${toCall.length} email${toCall.length > 1 ? "s are" : " is"} worth a call`, "You did not enter a number, so no call was placed. Add it at the top and press Start again.");
+  else ringCard("", "No call needed", "Nothing in this inbox clearly matched your rules.");
+
+  running = false; $("go").disabled = false; $("goText").textContent = "Run again";
+}
+
+async function ring(phone, ids) {
+  ringCard("live", "Calling +91 " + phone.slice(0, 5) + " " + phone.slice(5) + "…", "");
+  $("ring").scrollIntoView({ behavior: "smooth", block: "center" });
+  let call;
+  try { call = await post("/api/call", { phone, decision_ids: ids }); }
+  catch (e) { ringCard("", "No call placed", e.message); return; }
+  const words = {
+    queued: "Calling you now…", initiated: "Calling you now…", ringing: "Your phone is ringing. Pick up.", "in-progress": "Reading your emails to you…",
+    completed: "Call finished", busy: "Your line was busy", "no-answer": "No answer", failed: "The call failed", canceled: "The call was cancelled",
+  };
+  const script = "It says: “" + call.script + "”";
+  ringCard("live", words.queued, script);
+  for (let i = 0; i < 45; i++) {
+    await sleep(2200);
+    const s = await fetch("/api/call-status/" + call.call_id).then(r => r.json()).catch(() => ({ status: "unknown" }));
+    const over = ["completed", "busy", "no-answer", "failed", "canceled"].includes(s.status);
+    if (words[s.status]) ringCard(over ? (s.status === "completed" ? "done" : "") : "live", words[s.status], script);
+    if (over) break;
+  }
+}
+
+// ---------- wiring ----------
+$("go").onclick = () => mode === "real" ? watch() : run();
+$("tabReal").onclick = () => setMode("real");
+$("tabSample").onclick = () => setMode("sample");
+$("addRule").onclick = () => addRule("", true);
+$("addOwn").onclick = () => {
+  const mail = { from: $("ownFrom").value.trim() || "Someone <someone@example.com>", subject: $("ownSubject").value.trim(), body: $("ownBody").value.trim() };
+  if (!mail.subject && !mail.body) { $("ownSubject").focus(); return; }
+  if (emails.length >= 12) { $("inboxHelp").textContent = "The demo inbox holds 12 emails at most."; return; }
+  emails.push(mail);
+  addMail(mail, true);
+  $("ownFrom").value = $("ownSubject").value = $("ownBody").value = "";
+  $("inboxHelp").textContent = "Your email is in. Press Start to have it checked.";
+  cards[cards.length - 1].scrollIntoView({ behavior: "smooth", block: "center" });
+};
+
+fetch("/api/start-data").then(r => r.json()).then(data => {
+  data.rules.forEach(r => addRule(r));
+  sample = data.emails;
+  showInbox(sample);
+  if (data.real_inbox) { realAddress = data.real_inbox; $("tabs").classList.add("on"); }
+  if (new URLSearchParams(location.search).has("autorun")) run();  // for README screenshots; never calls (no number)
+});
+</script>
+</body>
+</html>
