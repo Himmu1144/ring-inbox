@@ -66,6 +66,6 @@ Stack: Python, FastAPI, Groq (gpt-oss-120b) with Gemini as fallback, Twilio for 
 
 ## Time
 
-Around 2 hours to get it working end to end, plus about 35 minutes testing and deploying. Write-up and video on top of that.
+Around 3 hours in total: picking the idea, building it, testing and deploying. Write-up and video on top of that.
 
 No keys or phone numbers in this repo, they live in `.env` which is git-ignored.
