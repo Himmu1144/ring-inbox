@@ -68,6 +68,6 @@ Stack: Python, FastAPI, Groq (gpt-oss-120b) with Gemini as fallback, Twilio for 
 
 ## Time
 
-Around 3 hours to plan, build and test it, then another 30 to 40 minutes to deploy, record the video, write up and submit.
+Around 3 hours to plan, build and test it, then about another hour to deploy, record the video, write up and submit.
 
 No keys or phone numbers in this repo, they live in `.env` which is git-ignored.
