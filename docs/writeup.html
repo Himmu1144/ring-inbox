@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Ring Inbox · Himanshu Sharma</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @page { size: A4; margin: 15mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font: 10pt/1.45 Inter, Helvetica, Arial, sans-serif; color: #1b1a17; margin: 0; }
+  h1 { font: 400 27pt/1 "Instrument Serif", Georgia, serif; margin: 0 0 4px; }
+  h1 em { color: #e8501c; }
+  .meta { color: #6b675f; font-size: 9.3pt; margin-bottom: 4px; }
+  .links { font-size: 9.3pt; margin-bottom: 12px; }
+  .links a { color: #e8501c; text-decoration: none; margin-right: 12px; white-space: nowrap; }
+  h2 { font-size: 11pt; margin: 11px 0 4px; padding-top: 7px; border-top: 1px solid #e6e3dc; }
+  h2 span { color: #e8501c; margin-right: 6px; }
+  p { margin: 0 0 6px; }
+  ul, ol { margin: 0 0 6px; padding-left: 18px; }
+  li { margin-bottom: 3px; }
+  .shot { width: 100%; height: 300px; object-fit: cover; object-position: top; border: 1px solid #e6e3dc; border-radius: 8px; margin: 6px 0 2px; }
+  .cap { color: #8f8b82; font-size: 8.5pt; text-align: center; margin-bottom: 4px; }
+  .flow { display: flex; gap: 6px; align-items: stretch; margin: 6px 0 8px; font-size: 9pt; }
+  .flow div { flex: 1; background: #f6f5f1; border-radius: 7px; padding: 7px 8px; }
+  .flow b { display: block; font-size: 8pt; color: #e8501c; text-transform: uppercase; letter-spacing: .4px; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.2pt; margin: 4px 0 6px; }
+  th { text-align: left; background: #f6f5f1; padding: 5px 7px; font-weight: 600; }
+  td { padding: 5px 7px; border-top: 1px solid #e6e3dc; vertical-align: top; }
+  .page2 { break-before: page; }
+</style></head><body>
+
+<h1>Ring Inbox: the emails that matter <em>call you.</em></h1>
+<div class="meta">Himanshu Sharma · i-SmokeStack AI Associate challenge · Nov 11, 2026</div>
+<div class="links">
+  <a href="https://ring-inbox-551661410853.asia-south1.run.app">Live demo</a>
+  <a href="https://github.com/Himmu1144/ring-inbox">Code: github.com/Himmu1144/ring-inbox</a>
+  <a href="https://youtu.be/bDFGVqwTZBY">Video: youtu.be/bDFGVqwTZBY</a>
+</div>
+
+<h2><span>01</span>The problem</h2>
+<p>I don't check my email often, so important ones slip by. The email for this challenge came on Nov 9 at 7:49 PM and I saw it the next morning around 10, about 14 hours later. If the deadline had been short, I'd have missed it.</p>
+<p>The important email is there, buried under newsletters, job alerts and offers, and nothing tells you it arrived. Notifications don't fix it because they ring for everything. This isn't only me: a founder misses a client asking about an unpaid invoice, a small team misses an investor's reply or a candidate confirming an interview.</p>
+
+<h2><span>02</span>My approach</h2>
+<p>Let the person say what matters in plain English, let AI read each email by meaning, and when something really matters, phone them. I picked a call on purpose: if you miss emails, you'll miss another message too. A ringing phone is hard to miss.</p>
+<div class="flow">
+  <div><b>1 · Rules</b>Written in plain English, e.g. "a client is asking about a payment or a deadline"</div>
+  <div><b>2 · AI reads</b>Each new email against the rules: which rule, how sure, why, one line to say</div>
+  <div><b>3 · Code decides</b>Sure match: call. Sure no match: ignore. Unsure: "needs a look"</div>
+  <div><b>4 · One call</b>Reads out all the important emails, everything is logged with a reason</div>
+</div>
+
+<h2><span>03</span>What I built</h2>
+<p>A web page with the rules, an inbox and a decision log. It has two inputs and one engine: on my laptop it watches a real Gmail inbox (read only) and calls me when an important email lands. The public link runs the same thing on sample emails, so anyone can put their own number in and get the call. The real inbox is switched off online for privacy.</p>
+<img class="shot" src="hero.png" alt="Ring Inbox decision log">
+<div class="cap">Sample run: 7 emails checked, 2 worth a call, each with the reason and the sentence read out on the call.</div>
+
+<div class="page2"></div>
+<h2><span>04</span>Try it yourself</h2>
+<ol>
+  <li>Open <a href="https://ring-inbox-551661410853.asia-south1.run.app" style="color:#e8501c">the live demo</a> on a phone or laptop.</li>
+  <li>Enter your Indian mobile number at the top and press <b>Start</b>. Seven sample emails get checked one by one, each with a decision and a reason.</li>
+  <li>Your phone rings within about 20 seconds and reads out the two important ones.</li>
+  <li>Change a rule (e.g. rule 3 to "Ignore anything about invoices") and press <b>Run again</b> to watch the decisions change, or add your own email under the inbox.</li>
+</ol>
+<p style="color:#6b675f;font-size:9pt">Capped at 10 calls a day. Leave the number empty to watch the decisions without a call.</p>
+
+<h2><span>05</span>Why this way, and where a person is still needed</h2>
+<table>
+  <tr><th style="width:33%">What the AI does</th><th style="width:33%">What is automated (plain code)</th><th>Where I still decide</th></tr>
+  <tr><td>Reads each email against the rules by meaning, so a Hinglish payment reminder counts and a newsletter about invoices doesn't</td>
+      <td>Turns the AI's verdict into an action with fixed thresholds, places one call per run, logs every decision</td>
+      <td>I write and fix the rules. When a test failed, the fix was rewording a rule, not changing code</td></tr>
+  <tr><td>Says how sure it is and why, and writes the line read out on the call</td>
+      <td>Blocks any email that gives the AI orders from ever triggering a call. Checks the number, caps calls per day</td>
+      <td>Every "needs a look" email. If no AI model answers at all, every email becomes "needs a look" and nothing is called</td></tr>
+</table>
+<p>Why simple: plain Python, one HTML page, Groq for the AI with Gemini as backup, Twilio for the call, IMAP for Gmail, Google Cloud Run for hosting. A one-way call that reads a summary is all this needs.</p>
+
+<h2><span>06</span>What didn't work and what I changed</h2>
+<p>I wrote 16 test emails meant to trick it: a newsletter about invoices, a webinar "this Thursday 4 PM", a Hinglish payment reminder, a calendar invite, a rejection, and two emails telling "the AI assistant" to call the owner.</p>
+<ul>
+  <li><b>Calendar invite missed.</b> The main model scored 15/16 and ignored a calendar invite as "automated". I reworded the rule to include invites from a real person. Then 16/16, three runs in a row.</li>
+  <li><b>A smaller model got tricked.</b> It obeyed an email that told it to call the owner. I added a check in code so an email giving orders to the AI can never trigger a call, and dropped that model.</li>
+  <li><b>Hit free limits on the first run.</b> I was sending one AI request per email. Now the whole inbox goes in one request, and if the AI doesn't answer, the page says so instead of "no call needed".</li>
+  <li><b>A run hung for 60 seconds.</b> The AI library was silently retrying. Now each model gets 12 seconds, then the next one is tried.</li>
+  <li><b>Still weak:</b> the "how sure" number is the model's own guess, and it says about 0.9 almost every time.</li>
+</ul>
+
+<h2><span>07</span>What I'd improve next</h2>
+<ul>
+  <li>Connect all my Gmail accounts into one place, since I use more than one.</li>
+  <li>Ask the model twice and treat disagreement as "unsure", instead of trusting its own number.</li>
+  <li>A WhatsApp message for "needs a look" emails, and two-way calls so I can ask what exactly they wanted. I've built voice agents on Deepgram's Voice Agent API with Twilio, so that's a natural next step.</li>
+</ul>
+
+<h2><span>08</span>Time spent</h2>
+<p>Around 3 hours to plan, build and test it, then another 30 to 40 minutes to deploy, record the video, write this up and submit.</p>
+</body></html>

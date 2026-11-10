@@ -4,6 +4,8 @@ The emails that matter call you.
 
 **Live demo:** https://ring-inbox-551661410853.asia-south1.run.app (put your number in, hit Start, your phone rings)
 
+**Video walkthrough:** https://youtu.be/bDFGVqwTZBY · **Write-up:** [PDF](docs/Ring-Inbox-Himanshu-Sharma.pdf)
+
 ![Ring Inbox](docs/hero.png)
 
 ## Why I built this
